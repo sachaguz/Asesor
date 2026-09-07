@@ -1,0 +1,37 @@
+# El proyecto no está bajo git (EAS_NO_VCS=1), así que EAS no tiene un
+# .gitignore que respetar automáticamente — sin este archivo subiría
+# node_modules y el /android generado localmente tal cual, en vez de dejar
+# que EAS corra su propio prebuild limpio.
+node_modules/
+
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+.metro-health-check*
+
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+.DS_Store
+*.pem
+
+.env
+.env*.local
+
+*.tsbuildinfo
+
+example
+
+/ios
+/android

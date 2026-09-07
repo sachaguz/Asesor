@@ -1,0 +1,15 @@
+# Nunca commitear secretos reales — cada .env real queda afuera, solo
+# .env.example viaja en el repo.
+.env
+.env.*.local
+
+# Config local de Claude Code (permisos/tareas de esta máquina, no del proyecto).
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Certificados TLS autofirmados de desarrollo (se regeneran localmente).
+backend/docker/*.pem
+backend/docker/*.pem.bak
+
+# El resto de lo específico por stack ya lo cubren backend/.gitignore y
+# frontend/.gitignore (node_modules, .venv, __pycache__, /android, /ios, etc.).

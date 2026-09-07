@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Asesor — boceto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3EDE3;        /* papel kraft claro */
+    --paper-2:#EAE1D3;      /* cartón */
+    --ink:#2B2119;          /* tinta café casi negra */
+    --ink-soft:#6B5D4F;     /* tinta suave */
+    --line:#D8CBB8;         /* líneas de caja */
+    --cognac:#9A5B34;       /* piel / acento */
+    --cognac-deep:#7A4526;
+    --resurte:#5E6B3E;      /* olivo: buena noticia */
+    --resurte-bg:#E7E9D6;
+    --nopidas:#9E4433;      /* barro: alto */
+    --nopidas-bg:#F0DED8;
+    --vigila:#A8792C;       /* mostaza: cuidado */
+    --vigila-bg:#F1E6CE;
+    --card:#FBF7F0;
+    --shadow:0 1px 0 rgba(43,33,25,.04), 0 10px 30px -18px rgba(43,33,25,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#E4DACB;color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{display:flex;justify-content:center;padding:28px 16px 60px;min-height:100vh}
+
+  .device{width:100%;max-width:412px;height:844px;max-height:calc(100vh - 56px);background:var(--paper);
+    border-radius:34px;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 2px 4px rgba(0,0,0,.06),0 30px 60px -24px rgba(43,33,25,.55);position:relative;border:1px solid #cdbfa9}
+  /* zona con scroll: contiene barra superior + pantallas, dejando fijos los tabs */
+  .device .top{flex-shrink:0}
+  .scroller{flex:1;overflow-y:auto;overflow-x:hidden}
+
+  /* --- barra superior --- */
+  .top{padding:22px 22px 16px;background:linear-gradient(180deg,var(--paper),var(--paper) 70%,rgba(243,237,227,0));position:relative;z-index:2}
+  .brandrow{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px}
+  .seal{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--cognac);display:grid;place-items:center;color:var(--cognac);font-family:'Fraunces';font-weight:600;font-size:17px;transform:rotate(-8deg)}
+  .brand h1{font-family:'Fraunces';font-weight:600;font-size:19px;letter-spacing:-.01em}
+  .store{font-size:12.5px;color:var(--ink-soft)}
+  .date{font-size:12px;color:var(--ink-soft);text-align:right;line-height:1.3}
+
+  /* --- pantallas --- */
+  .screen{display:none;padding:4px 18px 24px;animation:fade .28s ease;flex:1;overflow-y:auto;overflow-x:hidden}
+  .screen.active{display:flex;flex-direction:column}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .lead{font-family:'Fraunces';font-weight:500;font-size:22px;line-height:1.28;letter-spacing:-.015em;margin:10px 4px 4px}
+  .lead .em{color:var(--cognac-deep)}
+  .subtle{font-size:13.5px;color:var(--ink-soft);margin:0 4px 18px}
+
+  /* --- ficha de consejo --- */
+  .ficha{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px;margin-bottom:14px;
+    box-shadow:var(--shadow);position:relative;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease}
+  .ficha:active{transform:scale(.992)}
+  .ficha .holes{position:absolute;top:14px;bottom:14px;left:0;width:0}
+  .stamp{display:inline-flex;align-items:center;gap:7px;font-family:'Fraunces';font-weight:600;font-size:12.5px;
+    letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;border-radius:7px;border:1.5px solid;transform:rotate(-1.2deg)}
+  .stamp.resurte{color:var(--resurte);background:var(--resurte-bg);border-color:#c3cb9f}
+  .stamp.nopidas{color:var(--nopidas);background:var(--nopidas-bg);border-color:#e0b6ac}
+  .stamp.vigila{color:var(--vigila);background:var(--vigila-bg);border-color:#e3cb95}
+  .stamp .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+  .model{font-family:'Fraunces';font-weight:600;font-size:18px;margin:12px 0 3px;letter-spacing:-.01em}
+  .why{font-size:14px;line-height:1.5;color:#453729}
+  .metarow{display:flex;gap:14px;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
+  .meta{font-size:11.5px;color:var(--ink-soft)}
+  .meta b{color:var(--ink);font-weight:600;font-family:'Instrument Sans'}
+  .chev{position:absolute;right:15px;bottom:14px;color:var(--line);font-size:20px;line-height:1}
+
+  /* --- detalle --- */
+  .back{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--cognac-deep);background:none;border:none;
+    cursor:pointer;font-family:inherit;padding:8px 4px;margin-top:6px}
+  .detail-stamp{margin:8px 0 14px}
+  .detail-model{font-family:'Fraunces';font-weight:600;font-size:26px;letter-spacing:-.02em;margin-bottom:6px}
+  .detail-verdict{font-size:16px;line-height:1.5;color:#3d3022;margin-bottom:20px}
+  .detail-verdict b{color:var(--cognac-deep)}
+  .block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin-bottom:12px}
+  .block h3{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:12px}
+  .sizes{display:flex;gap:7px;flex-wrap:wrap}
+  .sz{min-width:42px;text-align:center;border:1px solid var(--line);border-radius:9px;padding:8px 4px;background:var(--paper)}
+  .sz .n{font-family:'Fraunces';font-weight:600;font-size:15px}
+  .sz .s{font-size:10px;color:var(--ink-soft);margin-top:2px}
+  .sz.gone{background:var(--resurte-bg);border-color:#c3cb9f}
+  .sz.gone .s{color:var(--resurte)}
+  .sz.left{background:#fff;border-style:dashed}
+  .reason{font-size:14px;line-height:1.6;color:#453729}
+  .reason .hl{background:var(--vigila-bg);padding:1px 5px;border-radius:5px}
+  .actions{display:flex;gap:10px;margin-top:6px}
+  .btn{flex:1;text-align:center;padding:13px;border-radius:12px;font-family:inherit;font-size:14.5px;font-weight:600;
+    border:1px solid var(--cognac);cursor:pointer}
+  .btn.primary{background:var(--cognac);color:#fff}
+  .btn.ghost{background:transparent;color:var(--cognac-deep)}
+
+  /* --- configuración --- */
+  .cfg-intro{font-size:13.5px;line-height:1.55;color:var(--ink-soft);margin:6px 4px 18px}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin-bottom:12px}
+  .q .ql{font-family:'Fraunces';font-weight:500;font-size:16px;margin-bottom:4px;letter-spacing:-.01em}
+  .q .qh{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;line-height:1.45}
+  .pills{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{padding:9px 14px;border-radius:20px;border:1px solid var(--line);background:var(--paper);font-size:13.5px;cursor:pointer}
+  .pill.on{background:var(--cognac);color:#fff;border-color:var(--cognac)}
+  .field{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 13px;font-family:inherit;font-size:14px;background:var(--paper);color:var(--ink)}
+  .note{font-size:12px;color:var(--ink-soft);margin-top:9px;line-height:1.45;display:flex;gap:8px}
+  .note .i{color:var(--cognac);flex-shrink:0}
+
+  /* --- configuración enriquecida --- */
+  .cfg-sec{font-family:'Fraunces';font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--cognac-deep);margin:24px 4px 12px;display:flex;align-items:center;gap:9px}
+  .cfg-sec::after{content:"";flex:1;height:1px;background:var(--line)}
+  .cfg-sec:first-of-type{margin-top:8px}
+
+  /* identidad / logo */
+  .identity{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px}
+  .logo-drop{width:74px;height:74px;border-radius:16px;border:1.5px dashed var(--cognac);background:var(--paper);
+    display:grid;place-items:center;cursor:pointer;flex-shrink:0;position:relative;overflow:hidden;transition:background .15s}
+  .logo-drop:hover{background:#fff}
+  .logo-drop .plus{font-family:'Fraunces';font-size:26px;color:var(--cognac);line-height:1}
+  .logo-drop .lbl{position:absolute;bottom:7px;font-size:9px;color:var(--cognac-deep);letter-spacing:.03em}
+  .identity .who{flex:1}
+  .identity .who .field{margin-bottom:8px}
+  .identity .who .fh{font-size:11.5px;color:var(--ink-soft)}
+
+  /* contexto libre */
+  .context-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px}
+  .context-box .ql{font-family:'Fraunces';font-weight:500;font-size:16px;margin-bottom:4px;letter-spacing:-.01em}
+  .context-box .qh{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;line-height:1.45}
+  .textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:11px;padding:12px 13px;
+    font-family:inherit;font-size:14px;line-height:1.5;background:var(--paper);color:var(--ink);resize:none}
+  .textarea::placeholder{color:#a89a86}
+  .examples{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+  .ex-chip{font-size:12px;color:var(--cognac-deep);background:var(--paper);border:1px solid var(--line);
+    border-radius:16px;padding:6px 11px;cursor:pointer}
+  .ex-chip::before{content:"+ ";opacity:.6}
+
+  /* archivos */
+  .file-drop{border:1.5px dashed var(--line);border-radius:16px;padding:22px 16px;text-align:center;cursor:pointer;
+    background:var(--card);transition:border-color .15s,background .15s}
+  .file-drop:hover{border-color:var(--cognac);background:#fff}
+  .file-drop .clip{width:34px;height:34px;border-radius:10px;background:var(--paper);display:inline-grid;place-items:center;
+    color:var(--cognac);font-size:17px;margin-bottom:9px}
+  .file-drop .ft{font-family:'Fraunces';font-weight:500;font-size:15px;margin-bottom:3px}
+  .file-drop .fs{font-size:12px;color:var(--ink-soft);line-height:1.45}
+  .files{margin-top:11px;display:flex;flex-direction:column;gap:9px}
+  .file{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+  .file .fi{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:700;
+    font-family:'Fraunces';color:#fff;flex-shrink:0}
+  .file .fi.xls{background:#5E6B3E}
+  .file .fi.pdf{background:#9E4433}
+  .file .fi.img{background:#9A5B34}
+  .file .fmeta{flex:1;min-width:0}
+  .file .fn{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file .fd{font-size:11.5px;color:var(--ink-soft)}
+  .file .fx{color:var(--ink-soft);cursor:pointer;font-size:16px;padding:4px;flex-shrink:0}
+  .file .ftag{font-size:10.5px;color:var(--resurte);background:var(--resurte-bg);border-radius:6px;padding:3px 7px;flex-shrink:0}
+
+  .cfg-save{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(243,237,227,0),var(--paper) 35%);
+    padding:18px 0 8px;margin-top:8px}
+  .cfg-save .btn{width:100%}
+
+  /* --- preguntar --- */
+  .chat{padding-top:8px;flex:1;overflow-y:auto;min-height:0}
+  .bubble{max-width:82%;padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.5;margin-bottom:10px}
+  .bubble.me{background:var(--cognac);color:#fff;margin-left:auto;border-bottom-right-radius:5px}
+  .bubble.ai{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
+  .bubble.ai b{color:var(--cognac-deep)}
+  .ask{flex-shrink:0;margin-top:12px;display:flex;gap:8px;align-items:center;
+    background:var(--card);border:1px solid var(--line);border-radius:24px;padding:6px 6px 6px 16px;box-shadow:var(--shadow)}
+  .ask input{flex:1;border:none;background:none;font-family:inherit;font-size:14px;color:var(--ink);outline:none}
+  .ask button{width:38px;height:38px;border-radius:50%;background:var(--cognac);color:#fff;border:none;font-size:17px;cursor:pointer}
+
+  /* --- nav inferior --- */
+  .nav{flex-shrink:0;background:var(--card);border-top:1px solid var(--line);
+    display:flex;padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:5}
+  .tab{flex:1;background:none;border:none;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;
+    align-items:center;gap:3px;padding:6px 0;color:var(--ink-soft);font-size:11px}
+  .tab .ic{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7}
+  .tab.on{color:var(--cognac-deep)}
+  .tab.on .ic{stroke:var(--cognac)}
+
+  .caption{max-width:412px;margin:16px auto 0;font-size:12px;color:#6b5d4f;text-align:center;line-height:1.5}
+
+  /* ===== ONBOARDING (primer arranque) ===== */
+  .onb{position:absolute;inset:0;z-index:30;background:var(--paper);display:flex;flex-direction:column;animation:fade .4s}
+  .onb.hide{opacity:0;pointer-events:none;transition:opacity .5s}
+  .onb-prog{display:flex;gap:6px;padding:22px 26px 0}
+  .onb-prog .seg{flex:1;height:3px;border-radius:2px;background:var(--line);overflow:hidden}
+  .onb-prog .seg .fill{height:100%;width:0;background:var(--cognac);transition:width .4s ease}
+  .onb-prog .seg.done .fill{width:100%}
+  .onb-prog .seg.now .fill{width:100%}
+  .onb-body{flex:1;overflow-y:auto;padding:26px 26px 10px;display:flex;flex-direction:column}
+  .onb-step{display:none;flex-direction:column;flex:1;animation:fade .35s}
+  .onb-step.active{display:flex}
+  .onb-eyebrow{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--cognac-deep);font-weight:600;margin-bottom:14px}
+  .onb-h{font-family:'Fraunces';font-weight:500;font-size:27px;line-height:1.25;letter-spacing:-.02em;margin-bottom:10px}
+  .onb-sub{font-size:14.5px;color:var(--ink-soft);line-height:1.55;margin-bottom:26px}
+  .onb-foot{padding:16px 26px calc(30px + env(safe-area-inset-bottom));display:flex;gap:12px;align-items:center;
+    border-top:1px solid var(--line);background:var(--card)}
+  .onb-back{background:none;border:none;color:var(--ink-soft);font-family:inherit;font-size:14px;cursor:pointer;padding:12px 6px}
+  .onb-next{flex:1;background:var(--cognac);color:#fff;border:none;border-radius:13px;padding:15px;
+    font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer}
+  .onb-next:hover{background:var(--cognac-deep)}
+  .onb-skip{background:none;border:none;color:var(--ink-soft);font-size:12.5px;font-family:inherit;cursor:pointer;
+    text-decoration:underline;text-underline-offset:3px;text-align:center;padding:6px;display:block;margin:0 auto}
+
+  /* hero de bienvenida */
+  .onb-hero{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center}
+  .onb-hero .bigseal{width:76px;height:76px;border-radius:50%;border:2px solid var(--cognac);display:grid;place-items:center;
+    color:var(--cognac);font-family:'Fraunces';font-weight:600;font-size:38px;transform:rotate(-8deg);margin:0 auto 26px}
+  .onb-hero h1{font-family:'Fraunces';font-weight:600;font-size:32px;letter-spacing:-.02em;margin-bottom:14px}
+  .onb-hero p{font-size:15.5px;color:var(--ink-soft);line-height:1.6;max-width:300px;margin:0 auto}
+
+  /* labels de campo en onboarding */
+  .onb-field-lbl{font-size:13px;color:var(--ink);font-weight:600;margin:16px 0 8px}
+  .onb-field-lbl:first-of-type{margin-top:0}
+
+  /* paso: conectar ventas */
+  .pos-grid{display:flex;flex-direction:column;gap:10px}
+  .pos-opt{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:14px;padding:15px;
+    background:var(--card);cursor:pointer;transition:border-color .14s}
+  .pos-opt:hover{border-color:var(--cognac)}
+  .pos-opt.sel{border-color:var(--cognac);background:#fff;box-shadow:var(--shadow)}
+  .pos-opt .ic{width:42px;height:42px;border-radius:11px;background:var(--paper-2);display:grid;place-items:center;
+    font-family:'Fraunces';font-weight:600;color:var(--cognac-deep);font-size:15px;flex-shrink:0}
+  .pos-opt .pn{font-family:'Fraunces';font-weight:600;font-size:15.5px}
+  .pos-opt .pd{font-size:12px;color:var(--ink-soft);margin-top:1px}
+  .onb-callout{display:flex;gap:10px;background:var(--vigila-bg);border:1px solid #e3cb95;border-radius:12px;
+    padding:12px 13px;margin-top:16px;font-size:12.5px;line-height:1.45;color:#6a5423}
+  .onb-callout .i{color:var(--vigila);flex-shrink:0}
+
+  /* cierre: primer consejo asoma */
+  .onb-final{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center}
+  .onb-final .big{width:66px;height:66px;border-radius:50%;background:var(--resurte);color:#fff;display:grid;place-items:center;
+    font-size:32px;margin:0 auto 22px;animation:pop .4s}
+  .onb-final h1{font-family:'Fraunces';font-weight:600;font-size:26px;letter-spacing:-.01em;margin-bottom:12px}
+  .onb-final p{font-size:14.5px;color:var(--ink-soft);line-height:1.55;max-width:290px;margin:0 auto 4px}
+
+  /* ===== PRIMER CONSEJO (el reveal / momento aha) ===== */
+  .firstadv{position:absolute;inset:0;z-index:29;background:linear-gradient(170deg,#F3EDE3,#EBE0CF 60%,#E4D6C2);
+    display:none;flex-direction:column;padding:0 24px}
+  .firstadv.on{display:flex}
+  .firstadv.hide{opacity:0;pointer-events:none;transition:opacity .5s}
+  /* fase 1: el asesor "piensa" */
+  .fa-think{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+  .fa-think .seal{width:66px;height:66px;border-radius:50%;border:2px solid var(--cognac);display:grid;place-items:center;
+    color:var(--cognac);font-family:'Fraunces';font-weight:600;font-size:32px;transform:rotate(-8deg);margin-bottom:24px;
+    animation:pulseRing 1.6s infinite}
+  .fa-think .tl{font-family:'Fraunces';font-weight:500;font-size:20px;color:var(--ink);margin-bottom:18px;letter-spacing:-.01em}
+  .fa-dots{display:flex;gap:8px}
+  .fa-dots i{width:9px;height:9px;border-radius:50%;background:var(--cognac);opacity:.3;animation:dotPulse 1.2s infinite}
+  .fa-dots i:nth-child(2){animation-delay:.2s}
+  .fa-dots i:nth-child(3){animation-delay:.4s}
+  @keyframes dotPulse{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+  /* fase 2: revela el consejo */
+  .fa-reveal{flex:1;display:none;flex-direction:column;padding-top:56px}
+  .fa-reveal.show{display:flex}
+  .fa-eyebrow{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--cognac-deep);font-weight:600;
+    margin-bottom:12px;animation:rise .5s both}
+  .fa-h{font-family:'Fraunces';font-weight:500;font-size:27px;line-height:1.25;letter-spacing:-.02em;margin-bottom:22px;
+    animation:rise .5s .1s both}
+  .fa-h .em{color:var(--cognac-deep)}
+  .fa-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);
+    animation:bounceIn .6s .25s both}
+  .fa-card .stamp{margin-bottom:14px}
+  .fa-card .model{font-family:'Fraunces';font-weight:600;font-size:21px;letter-spacing:-.01em;margin-bottom:8px}
+  .fa-card .why{font-size:15px;line-height:1.55;color:#453729}
+  .fa-card .metarow{display:flex;gap:16px;margin-top:15px;padding-top:13px;border-top:1px dashed var(--line)}
+  .fa-card .meta{font-size:12px;color:var(--ink-soft)}
+  .fa-card .meta b{color:var(--ink);font-weight:600}
+  .fa-note{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-top:18px;text-align:center;
+    animation:rise .5s .5s both}
+  .fa-foot{padding:16px 0 34px;animation:rise .5s .6s both}
+  .fa-foot .btn{width:100%}
+
+  /* ===== ANIMACIONES ===== */
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes sealIn{0%{opacity:0;transform:rotate(-8deg) scale(.4)}60%{transform:rotate(-8deg) scale(1.12)}100%{opacity:1;transform:rotate(-8deg) scale(1)}}
+  @keyframes bounceIn{0%{opacity:0;transform:scale(.3)}55%{transform:scale(1.15)}75%{transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+  @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(154,91,52,.35)}70%{box-shadow:0 0 0 14px rgba(154,91,52,0)}100%{box-shadow:0 0 0 0 rgba(154,91,52,0)}}
+  @keyframes confetti{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(320px) rotate(540deg);opacity:0}}
+  @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+  @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+  /* entrada escalonada de hijos dentro del paso activo */
+  .onb-step.active .onb-eyebrow{animation:rise .45s .05s both}
+  .onb-step.active .onb-h{animation:rise .45s .12s both}
+  .onb-step.active .onb-sub{animation:rise .45s .19s both}
+  .onb-step.active .onb-field-lbl,
+  .onb-step.active .field,
+  .onb-step.active .pills,
+  .onb-step.active .identity,
+  .onb-step.active .pos-grid,
+  .onb-step.active .textarea,
+  .onb-step.active .note,
+  .onb-step.active .onb-callout{animation:rise .5s .26s both}
+  .onb-step.active .onb-callout{animation-delay:.34s}
+
+  .onb-hero .bigseal{animation:sealIn .7s .1s both}
+  .onb-hero h1{animation:rise .5s .38s both}
+  .onb-hero p{animation:rise .5s .5s both}
+
+  .onb-final .big{animation:bounceIn .6s both}
+  .onb-final h1{animation:rise .5s .3s both}
+  .onb-final p{animation:rise .5s .42s both}
+
+  /* barra de progreso con brillo al llenar */
+  .onb-prog .seg .fill{background:linear-gradient(90deg,var(--cognac),var(--cognac-deep),var(--cognac));
+    background-size:200% 100%}
+  .onb-prog .seg.now .fill{animation:shimmer 1.4s linear infinite}
+
+  /* botón next con micro-rebote al presionar */
+  .onb-next{transition:transform .12s ease, background .15s}
+  .onb-next:active{transform:scale(.96)}
+  .pos-opt{transition:border-color .14s, transform .12s, box-shadow .14s}
+  .pos-opt:active{transform:scale(.985)}
+  .pos-opt.sel .ic{animation:wiggle .4s}
+  .pill{transition:transform .1s ease, background .12s, color .12s, border-color .12s}
+  .pill:active{transform:scale(.93)}
+  .logo-drop{transition:background .15s, transform .12s}
+  .logo-drop:active{transform:scale(.94)}
+
+  /* confeti del cierre */
+  .confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:40}
+  .confetti-wrap i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;opacity:0}
+  .confetti-wrap.go i{animation:confetti 1.5s ease-in forwards}
+
+  /* ===== TOUR DE FUNCIONES (coach marks) ===== */
+  .tour{position:absolute;inset:0;z-index:25;pointer-events:none;display:none}
+  .tour.on{display:block}
+  /* velo base tenue (solo pointer-events); el oscurecido fuerte lo pinta la sombra del halo */
+  .tour-scrim{position:absolute;inset:0;background:transparent;pointer-events:auto}
+  .tour-card{position:absolute;left:22px;right:22px;background:var(--card);border-radius:18px;padding:18px 18px 16px;
+    box-shadow:0 20px 50px -12px rgba(43,33,25,.6);pointer-events:auto;opacity:0;transform:translateY(10px) scale(.97);
+    transition:opacity .35s, transform .35s;z-index:28}
+  .tour.show .tour-card{opacity:1;transform:none}
+  .tour-card .tnum{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--cognac-deep);font-weight:600;margin-bottom:8px}
+  .tour-card .th{font-family:'Fraunces';font-weight:600;font-size:19px;letter-spacing:-.01em;margin-bottom:6px}
+  .tour-card .tp{font-size:14px;line-height:1.5;color:#453729;margin-bottom:15px}
+  .tour-card .trow{display:flex;align-items:center;justify-content:space-between}
+  .tour-card .tdots{display:flex;gap:6px}
+  .tour-card .tdot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+  .tour-card .tdot.on{background:var(--cognac);transform:scale(1.25)}
+  .tour-card .tnext{background:var(--cognac);color:#fff;border:none;border-radius:11px;padding:11px 20px;
+    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .12s}
+  .tour-card .tnext:active{transform:scale(.95)}
+  .tour-card .tskip{background:none;border:none;color:var(--ink-soft);font-size:13px;font-family:inherit;cursor:pointer}
+  /* halo del ELEMENTO interno: su sombra gigante crea el oscurecido alrededor (ventana recortada) */
+  .tour-spot{position:absolute;border-radius:16px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:23}
+  #tourSpot{box-shadow:0 0 0 3px var(--cognac), 0 0 0 3000px rgba(43,33,25,.62);animation:pulseRing 1.8s infinite}
+  /* halo de la PESTAÑA: solo el anillo, sin velo propio */
+  #tourTabSpot{box-shadow:0 0 0 3px var(--cognac), 0 0 0 8px rgba(154,91,52,.25);animation:pulseRing 1.8s infinite}
+  .tour.show .tour-spot{opacity:1}
+  /* elemento señalado y barra de tabs quedan nítidos (por encima del velo, por debajo de la tarjeta) */
+  body.touring .nav{position:relative;z-index:24;pointer-events:none}
+  body.touring .tour-highlight{position:relative;z-index:24}
+
+  /* coach mark de la pregunta del día (encima de welcome) */
+  .qtip{position:absolute;left:22px;right:22px;bottom:44px;z-index:22;background:var(--card);border-radius:18px;
+    padding:18px 18px 16px;box-shadow:0 20px 50px -12px rgba(43,33,25,.6);opacity:0;transform:translateY(12px) scale(.97);
+    transition:opacity .4s, transform .4s;pointer-events:none}
+  .qtip.show{opacity:1;transform:none;pointer-events:auto}
+  .qtip .tnum{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--cognac-deep);font-weight:600;margin-bottom:8px}
+  .qtip .th{font-family:'Fraunces';font-weight:600;font-size:19px;letter-spacing:-.01em;margin-bottom:6px}
+  .qtip .tp{font-size:14px;line-height:1.5;color:#453729;margin-bottom:15px}
+  .qtip .trow{display:flex;align-items:center;justify-content:flex-end}
+  .qtip .tnext{background:var(--cognac);color:#fff;border:none;border-radius:11px;padding:11px 20px;
+    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:transform .12s}
+  .qtip .tnext:active{transform:scale(.95)}
+
+  /* --- pregunta del día --- */
+  .pregunta{background:linear-gradient(180deg,#fff,var(--card));border:1px solid var(--cognac);border-radius:18px;
+    padding:16px 16px 14px;margin:8px 0 8px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .pregunta::before{content:"";position:absolute;top:0;left:0;width:5px;bottom:0;background:var(--cognac)}
+  .p-eyebrow{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--cognac-deep);font-weight:600;margin-bottom:9px}
+  .p-eyebrow .qm{width:19px;height:19px;border-radius:50%;background:var(--cognac);color:#fff;display:grid;place-items:center;
+    font-family:'Fraunces';font-size:12px;font-weight:600}
+  .p-text{font-family:'Fraunces';font-weight:500;font-size:17.5px;line-height:1.35;letter-spacing:-.01em;margin-bottom:13px}
+  .p-opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+  .p-opt{padding:9px 15px;border-radius:20px;border:1px solid var(--line);background:var(--paper);
+    font-size:13.5px;cursor:pointer;font-family:inherit;color:var(--ink);transition:all .12s}
+  .p-opt:hover{border-color:var(--cognac)}
+  .p-skip{background:none;border:none;color:var(--ink-soft);font-size:12.5px;font-family:inherit;
+    cursor:pointer;padding:8px 2px;margin-top:4px;text-decoration:underline;text-underline-offset:2px}
+  .p-done{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--resurte);padding:2px}
+  .p-done .ck{width:20px;height:20px;border-radius:50%;background:var(--resurte);color:#fff;display:grid;place-items:center;font-size:12px}
+
+  /* --- eco: respuesta usada --- */
+  .eco{background:var(--vigila-bg);border:1px solid #e3cb95;border-radius:13px;padding:11px 13px;margin-bottom:16px;
+    display:flex;gap:9px;font-size:12.5px;line-height:1.45;color:#6a5423}
+  .eco .sp{flex-shrink:0;color:var(--vigila);font-size:14px}
+  .eco b{color:#5a4416}
+
+  /* --- pantalla completa: pregunta de bienvenida --- */
+  .welcome{position:absolute;inset:0;background:linear-gradient(165deg,#F3EDE3,#E8DDCC 70%,#E0D3BF);
+    z-index:20;display:flex;flex-direction:column;padding:0 26px;animation:fade .4s ease}
+  .welcome.hide{opacity:0;pointer-events:none;transform:translateY(-14px);transition:opacity .5s, transform .5s}
+  .w-top{padding-top:64px;display:flex;align-items:center;gap:10px;color:var(--ink-soft)}
+  .w-top .seal{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--cognac);display:grid;place-items:center;
+    color:var(--cognac);font-family:'Fraunces';font-weight:600;font-size:15px;transform:rotate(-8deg)}
+  .w-top span{font-size:13px}
+  .w-center{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:40px}
+  .w-eyebrow{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--cognac-deep);font-weight:600;margin-bottom:16px}
+  .w-q{font-family:'Fraunces';font-weight:500;font-size:29px;line-height:1.24;letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
+  .w-hint{font-size:14px;color:var(--ink-soft);line-height:1.5;margin-bottom:30px}
+  .w-opts{display:flex;flex-direction:column;gap:11px}
+  .w-opt{text-align:left;padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.7);
+    font-family:'Fraunces';font-weight:500;font-size:16.5px;color:var(--ink);cursor:pointer;transition:all .14s;letter-spacing:-.01em}
+  .w-opt:hover{border-color:var(--cognac);background:#fff;transform:translateX(3px)}
+  .w-bottom{padding-bottom:44px;padding-top:20px;display:flex;justify-content:space-between;align-items:center}
+  .w-skip{background:none;border:none;color:var(--ink-soft);font-size:13.5px;font-family:inherit;cursor:pointer;
+    text-decoration:underline;text-underline-offset:3px}
+  .w-count{font-size:12px;color:var(--ink-soft)}
+  .w-done{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-bottom:60px}
+  .w-done .big{width:64px;height:64px;border-radius:50%;background:var(--resurte);color:#fff;display:grid;place-items:center;
+    font-size:30px;margin-bottom:22px;animation:pop .4s ease}
+  @keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+  .w-done h2{font-family:'Fraunces';font-weight:600;font-size:23px;letter-spacing:-.01em;margin-bottom:10px}
+  .w-done p{font-size:14.5px;color:var(--ink-soft);line-height:1.5;max-width:280px}
+</style>
+</head>
+<body>
+<div style="width:100%;max-width:412px">
+<div class="device">
+
+  <!-- ============ ONBOARDING (primer arranque) ============ -->
+  <div class="onb" id="onb">
+    <div class="confetti-wrap" id="confetti"></div>
+    <div class="onb-prog" id="onbProg">
+      <div class="seg"><div class="fill"></div></div>
+      <div class="seg"><div class="fill"></div></div>
+      <div class="seg"><div class="fill"></div></div>
+      <div class="seg"><div class="fill"></div></div>
+      <div class="seg"><div class="fill"></div></div>
+      <div class="seg"><div class="fill"></div></div>
+    </div>
+
+    <div class="onb-body">
+
+      <!-- paso 0: bienvenida -->
+      <div class="onb-step active" data-step="0">
+        <div class="onb-hero">
+          <div class="bigseal">A</div>
+          <h1>Soy tu Asesor</h1>
+          <p>Voy a revisar tus ventas y a decirte, en corto, qué te conviene resurtir y qué no. Vamos a configurarlo juntos. Toma 3 minutos.</p>
+        </div>
+      </div>
+
+      <!-- paso 1: identidad -->
+      <div class="onb-step" data-step="1">
+        <div class="onb-eyebrow">Paso 1 de 5 · Tu negocio</div>
+        <div class="onb-h">¿Cómo se llama tu tienda?</div>
+        <div class="onb-sub">Con este nombre te voy a saludar y a firmar tus consejos.</div>
+        <div class="onb-field-lbl">Nombre del negocio</div>
+        <input class="field" placeholder="Ej. Zapatería La Reforma" value="Zapatería La Reforma">
+        <div class="onb-field-lbl">Tu logo <span style="color:var(--ink-soft);font-weight:400">(opcional)</span></div>
+        <div class="identity" style="border:none;padding:0">
+          <div class="logo-drop" onclick="this.querySelector('.plus').textContent='✓';this.style.borderStyle='solid';this.querySelector('.lbl').textContent='Listo'">
+            <span class="plus">+</span><span class="lbl">Subir</span>
+          </div>
+          <div class="who" style="font-size:12.5px;color:var(--ink-soft)">Puede ser una foto del letrero de tu tienda. Si no tienes, no pasa nada.</div>
+        </div>
+      </div>
+
+      <!-- paso 2: giro + temporadas -->
+      <div class="onb-step" data-step="2">
+        <div class="onb-eyebrow">Paso 2 de 5 · Qué vendes</div>
+        <div class="onb-h">¿Qué vende tu negocio?</div>
+        <div class="onb-sub">Cada giro se maneja distinto. Esto me dice qué reglas usar contigo.</div>
+        <div class="pills">
+          <span class="pill on">Calzado</span><span class="pill">Ropa</span>
+          <span class="pill">Abarrotes</span><span class="pill">Farmacia</span><span class="pill">Otro</span>
+        </div>
+        <div class="note" style="margin-top:14px"><span class="i">◆</span><span>Al elegir calzado ya sé de tallas, de temporadas y que las tallas de punta salen al último. No tienes que explicármelo.</span></div>
+        <div class="onb-field-lbl" style="margin-top:24px">¿Cuáles son tus temporadas fuertes?</div>
+        <div class="pills">
+          <span class="pill on">Regreso a clases</span><span class="pill on">Fin de año</span>
+          <span class="pill">Día de las madres</span><span class="pill">Verano</span>
+        </div>
+      </div>
+
+      <!-- paso 3: conectar ventas (el espinoso) -->
+      <div class="onb-step" data-step="3">
+        <div class="onb-eyebrow">Paso 3 de 5 · Tus ventas</div>
+        <div class="onb-h">¿Dónde registras tus ventas?</div>
+        <div class="onb-sub">De aquí saco todo. Escoge tu sistema y yo me encargo de leer tus ventas.</div>
+        <div class="pos-grid">
+          <div class="pos-opt sel" onclick="selPos(this)"><div class="ic">POS</div><div><div class="pn">Mi punto de venta</div><div class="pd">Conecto con tu sistema actual</div></div></div>
+          <div class="pos-opt" onclick="selPos(this)"><div class="ic">XLS</div><div><div class="pn">Un Excel o archivo</div><div class="pd">Súbeme tu reporte de ventas</div></div></div>
+          <div class="pos-opt" onclick="selPos(this)"><div class="ic">✎</div><div><div class="pn">Lo llevo a mano</div><div class="pd">Te ayudo a empezar a registrar</div></div></div>
+        </div>
+        <div class="onb-callout"><span class="i">◆</span><span>Tus ventas son tuyas. Solo las uso para darte consejos; nunca las comparto ni las vendo.</span></div>
+      </div>
+
+      <!-- paso 4: lo que solo tú sabes -->
+      <div class="onb-step" data-step="4">
+        <div class="onb-eyebrow">Paso 4 de 5 · Lo que solo tú sabes</div>
+        <div class="onb-h">Platícame de tu negocio</div>
+        <div class="onb-sub">Cosas que no salen en las ventas pero cambian mis consejos. Escribe lo que quieras, con tus palabras. Esto también lo puedes hacer después.</div>
+        <textarea class="textarea" style="min-height:120px" placeholder="Ej. Mis clientes son del rumbo, gente trabajadora. Lo que más me piden es calzado para diario. El local de junto también vende zapatos, así que en precio no puedo pasarme…"></textarea>
+        <div class="onb-callout" style="background:var(--resurte-bg);border-color:#c3cb9f;color:#48532f"><span class="i" style="color:var(--resurte)">◆</span><span>Entre más me cuentes, menos consejos tontos te doy. Pero si hoy no quieres, lo saltamos y me lo dices sobre la marcha.</span></div>
+      </div>
+
+      <!-- paso 5: listo -->
+      <div class="onb-step" data-step="5">
+        <div class="onb-final">
+          <div class="big">✓</div>
+          <h1>Listo, ya nos conocemos</h1>
+          <p>Déjame revisar tus ventas un momento… creo que ya tengo algo bueno que decirte.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="onb-foot">
+      <button class="onb-back" id="onbBack" onclick="onbPrev()" style="visibility:hidden">‹ Atrás</button>
+      <button class="onb-next" id="onbNext" onclick="onbNext()">Empezar</button>
+    </div>
+  </div>
+
+  <!-- ============ PRIMER CONSEJO (reveal) ============ -->
+  <div class="firstadv" id="firstadv">
+    <!-- fase 1: piensa -->
+    <div class="fa-think" id="faThink">
+      <div class="seal">A</div>
+      <div class="tl">Estoy revisando tus ventas…</div>
+      <div class="fa-dots"><i></i><i></i><i></i></div>
+    </div>
+    <!-- fase 2: revela -->
+    <div class="fa-reveal" id="faReveal">
+      <div class="fa-eyebrow">Listo · tu primer consejo</div>
+      <div class="fa-h">Encontré algo que <span class="em">te conviene</span> saber hoy.</div>
+      <div class="fa-card">
+        <div class="stamp resurte" style="display:inline-flex"><span class="dot"></span>Resurte</div>
+        <div class="model">Botín Capa 720 — Café</div>
+        <div class="why">Se te vendió casi completo en 19 días. Te quedó suelta la talla 22, pero eso es normal: las tallas de punta siempre salen al último. Este modelo vuela, vuélvelo a pedir.</div>
+        <div class="metarow">
+          <div class="meta"><b>7 de 8</b> tallas vendidas</div>
+          <div class="meta">se agotó en <b>19 días</b></div>
+        </div>
+      </div>
+      <div class="fa-note">Así de claro te voy a hablar cada día. Ni gráficas, ni números que descifrar.</div>
+      <div class="fa-foot">
+        <button class="btn primary" onclick="closeFirstAdv()">Ver todos mis consejos</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tour" id="tour">
+    <div class="tour-scrim"></div>
+    <div class="tour-spot" id="tourSpot"></div>
+    <div class="tour-spot" id="tourTabSpot"></div>
+    <div class="tour-card" id="tourCard">
+      <div class="tnum" id="tourNum">1 de 3</div>
+      <div class="th" id="tourH">Aquí están tus consejos</div>
+      <div class="tp" id="tourP">Cada día reviso tus ventas y te dejo aquí lo más importante que debes decidir. Es lo primero que verás al abrir.</div>
+      <div class="trow">
+        <div class="tdots" id="tourDots"></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="tskip" onclick="endTour()">Saltar</button>
+          <button class="tnext" id="tourNext" onclick="tourNext()">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PANTALLA DE BIENVENIDA: PREGUNTA DEL DÍA ============ -->
+  <div class="welcome" id="welcome">
+    <div class="w-top">
+      <div class="seal">A</div>
+      <span>Buen día. Antes de tus consejos…</span>
+    </div>
+    <div class="w-center" id="wBody">
+      <div class="w-eyebrow">Pregunta del día</div>
+      <div class="w-q">El Botín Capa 720 se vende rapidísimo. ¿Dónde lo tienes puesto en la tienda?</div>
+      <div class="w-hint">Saberlo me ayuda a entender por qué unos modelos vuelan y otros no.</div>
+      <div class="w-opts">
+        <button class="w-opt" onclick="wResponder(this)">En el aparador</button>
+        <button class="w-opt" onclick="wResponder(this)">Al frente, a la vista</button>
+        <button class="w-opt" onclick="wResponder(this)">En una repisa de adentro</button>
+        <button class="w-opt" onclick="wResponder(this)">Hasta el fondo</button>
+      </div>
+    </div>
+    <div class="w-bottom" id="wBottom">
+      <button class="w-skip" onclick="entrar()">Hoy no, gracias</button>
+      <span class="w-count">Una pregunta al día · nada más</span>
+    </div>
+
+    <!-- coach mark: explica la pregunta del día (solo en el primer arranque) -->
+    <div class="qtip" id="qtip">
+      <div class="tnum">Y una cosa más</div>
+      <div class="th">Cada día te hago una pregunta</div>
+      <div class="tp">Una sola, nunca más. Así te conozco mejor y mis consejos mejoran. Contéstala o salta con "Hoy no" cuando quieras. Ándale, prueba esta.</div>
+      <div class="trow">
+        <button class="tnext" onclick="closeQtip()">Va, la contesto</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="top">
+    <div class="brandrow">
+      <div class="brand">
+        <div class="seal">A</div>
+        <div>
+          <h1>El Asesor</h1>
+          <div class="store">Zapatería La Reforma</div>
+        </div>
+      </div>
+      <div class="date">Lunes<br>18 de agosto</div>
+    </div>
+  </div>
+
+  <!-- ============ PANTALLA 1: CONSEJOS DE HOY ============ -->
+  <section class="screen active" id="s-hoy">
+
+    <!-- eco: cómo se usó la respuesta de ayer (cierra el círculo) -->
+    <div class="eco">
+      <span class="sp">◆</span>
+      <div>Ayer me dijiste que el <b>Mocasín Dorado</b> lo tenías guardado sin exhibir. Por eso, antes de decirte que no lo pidas, revisé si era falta de venta o falta de que lo vieran. Sigue lento aun estando visible, así que mi consejo se mantiene.</div>
+    </div>
+
+    <p class="lead">Revisé tus ventas del mes.<br>Tengo <span class="em">3 cosas</span> que decirte.</p>
+    <p class="subtle">Toca cualquiera para ver por qué.</p>
+
+    <div class="ficha" id="spot-hoy" onclick="go('detalle')">
+      <div class="stamp resurte"><span class="dot"></span>Resurte</div>
+      <div class="model">Botín Capa 720 — Café</div>
+      <div class="why">Se vendió el modelo casi completo. Aunque te quedó la talla 22 sin salir, eso es normal en tallas de punta. Este modelo vuela: pídelo otra vez.</div>
+      <div class="metarow">
+        <div class="meta"><b>7 de 8</b> tallas vendidas</div>
+        <div class="meta">se agotó en <b>19 días</b></div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+
+    <div class="ficha" onclick="go('detalle')">
+      <div class="stamp nopidas"><span class="dot"></span>No pidas</div>
+      <div class="model">Mocasín Dorado — Dama</div>
+      <div class="why">Llevas 3 meses con este modelo casi sin moverse. Ya bajó de temporada y te siguen quedando 6 pares. Mejor no metas más dinero aquí.</div>
+      <div class="metarow">
+        <div class="meta"><b>6 pares</b> parados</div>
+        <div class="meta">última venta hace <b>41 días</b></div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+
+    <div class="ficha" onclick="go('detalle')">
+      <div class="stamp vigila"><span class="dot"></span>Vigila</div>
+      <div class="model">Tenis Escolar — Niño</div>
+      <div class="why">Empieza a moverse fuerte: es agosto y viene el regreso a clases. El año pasado se te acabó antes de tiempo. Ten listo el resurtido para no quedarte corto.</div>
+      <div class="metarow">
+        <div class="meta">subió <b>+38%</b> esta semana</div>
+        <div class="meta">temporada <b>escolar</b></div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 2: DETALLE ============ -->
+  <section class="screen" id="s-detalle">
+    <button class="back" onclick="go('hoy')">‹ Volver a los consejos</button>
+    <div class="detail-stamp"><span class="stamp resurte"><span class="dot"></span>Resurte</span></div>
+    <div class="detail-model">Botín Capa 720 — Café</div>
+    <p class="detail-verdict">Mi consejo: <b>vuélvelo a pedir completo.</b> No te dejes engañar por la talla que quedó.</p>
+
+    <div class="block">
+      <h3>Cómo se vendió</h3>
+      <div class="sizes">
+        <div class="sz gone"><div class="n">23</div><div class="s">vendida</div></div>
+        <div class="sz gone"><div class="n">24</div><div class="s">vendida</div></div>
+        <div class="sz gone"><div class="n">25</div><div class="s">vendida</div></div>
+        <div class="sz gone"><div class="n">26</div><div class="s">vendida</div></div>
+        <div class="sz gone"><div class="n">27</div><div class="s">vendida</div></div>
+        <div class="sz gone"><div class="n">28</div><div class="s">vendida</div></div>
+        <div class="sz gone"><div class="n">29</div><div class="s">vendida</div></div>
+        <div class="sz left"><div class="n">22</div><div class="s">1 par</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3>Por qué te lo digo</h3>
+      <p class="reason">Un sistema tonto vería la talla 22 parada y diría "no la pidas". Pero yo sé cómo se venden los zapatos: <span class="hl">la 22 es talla de punta, siempre es la última en salir</span>. Lo que importa es que las 7 tallas del centro se te acabaron rapidísimo. Eso es un modelo ganador, no uno que dejar morir.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" onclick="go('hoy')">Ahora no</button>
+      <button class="btn primary" onclick="go('hoy')">Anotar para pedir</button>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 3: CONFIGURACIÓN ============ -->
+  <section class="screen" id="s-config">
+    <p class="lead">Tu negocio.</p>
+    <p class="cfg-intro">Todo esto lo lees y cambias cuando quieras. Entre mejor te conozca, mejores consejos te doy.</p>
+
+    <div class="cfg-sec">Identidad</div>
+    <div class="identity">
+      <div class="logo-drop" onclick="this.querySelector('.plus').textContent='✓';this.style.borderStyle='solid';this.querySelector('.lbl').textContent='Listo'">
+        <span class="plus">+</span>
+        <span class="lbl">Logo</span>
+      </div>
+      <div class="who">
+        <input class="field" value="Zapatería La Reforma" readonly>
+        <div class="fh">Así te saludo y firmo tus consejos.</div>
+      </div>
+    </div>
+
+    <div class="cfg-sec">Qué vendes</div>
+    <div class="q">
+      <div class="ql">Giro del negocio</div>
+      <div class="qh">Cada giro se maneja distinto. Esto me dice qué reglas usar.</div>
+      <div class="pills">
+        <span class="pill on">Calzado</span>
+        <span class="pill">Ropa</span>
+        <span class="pill">Abarrotes</span>
+        <span class="pill">Farmacia</span>
+        <span class="pill">Otro</span>
+      </div>
+      <div class="note"><span class="i">◆</span><span>Elegiste calzado, así que ya sé de tallas, temporadas y que las tallas de punta salen al último.</span></div>
+    </div>
+
+    <div class="q">
+      <div class="ql">Tus temporadas fuertes</div>
+      <div class="qh">Para avisarte antes de que lleguen, no cuando ya pasaron.</div>
+      <div class="pills">
+        <span class="pill on">Regreso a clases</span>
+        <span class="pill on">Fin de año</span>
+        <span class="pill">Día de las madres</span>
+        <span class="pill">Verano</span>
+      </div>
+    </div>
+
+    <div class="cfg-sec">Lo que solo tú sabes</div>
+    <div class="context-box" id="spot-config">
+      <div class="ql">Cuéntame de tu negocio con tus palabras</div>
+      <div class="qh">Cosas que no salen en las ventas pero cambian mis consejos. Escribe como si me lo platicaras.</div>
+      <textarea class="textarea" placeholder="Por ejemplo: mis clientes son de por el rumbo, gente trabajadora. Lo que más se me pide es calzado resistente para diario. Los fines de mes venden más. El local de junto también vende zapatos, así que en precio no puedo pasarme…"></textarea>
+      <div class="examples">
+        <span class="ex-chip" onclick="addEx(this)">Quién es mi cliente</span>
+        <span class="ex-chip" onclick="addEx(this)">Mi competencia</span>
+        <span class="ex-chip" onclick="addEx(this)">Cómo manejo precios</span>
+        <span class="ex-chip" onclick="addEx(this)">Mis mejores proveedores</span>
+      </div>
+    </div>
+
+    <div class="cfg-sec">Documentos que me ayudan</div>
+    <div class="file-drop" onclick="addFile()">
+      <div class="clip">⎘</div>
+      <div class="ft">Adjunta archivos de tu negocio</div>
+      <div class="fs">Listas de precios, catálogos de proveedor, inventarios viejos.<br>PDF, Excel o fotos.</div>
+    </div>
+    <div class="files" id="fileList">
+      <div class="file">
+        <div class="fi xls">XLS</div>
+        <div class="fmeta">
+          <div class="fn">Lista de proveedores 2025.xlsx</div>
+          <div class="fd">Subido hace 2 días</div>
+        </div>
+        <span class="ftag">Leído ✓</span>
+      </div>
+      <div class="file">
+        <div class="fi pdf">PDF</div>
+        <div class="fmeta">
+          <div class="fn">Catálogo Flexi otoño.pdf</div>
+          <div class="fd">Subido hace 2 días</div>
+        </div>
+        <span class="ftag">Leído ✓</span>
+      </div>
+    </div>
+
+    <div class="cfg-save">
+      <button class="btn primary" onclick="go('hoy')">Guardar cambios</button>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 4: PREGUNTAR ============ -->
+  <section class="screen" id="s-preguntar">
+    <p class="lead" style="margin-bottom:16px">Pregúntame lo que quieras.</p>
+    <div class="chat" id="spot-preguntar">
+      <div class="bubble me">¿Cómo va el modelo dorado de dama?</div>
+      <div class="bubble ai">Va lento, la verdad. Llevas <b>41 días</b> sin vender un par y te quedan 6. Ya pasó su temporada. Yo no le metería más; mejor sácalo con una promo para recuperar el dinero.</div>
+      <div class="bubble me">¿Y qué es lo que mejor se me vende?</div>
+      <div class="bubble ai">Tus <b>botines de caballero</b>. Se te acaban en menos de 3 semanas cada vez que los surtes. Esos nunca los dejes faltar.</div>
+    </div>
+    <div class="ask">
+      <input placeholder="Escribe o dicta tu pregunta…" readonly>
+      <button>↑</button>
+    </div>
+  </section>
+
+  <!-- ============ NAV ============ -->
+  <nav class="nav">
+    <button class="tab on" data-s="hoy" onclick="go('hoy')">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></svg>
+      Hoy
+    </button>
+    <button class="tab" data-s="preguntar" onclick="go('preguntar')">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-6a8 8 0 1 1 18-5z"/></svg>
+      Preguntar
+    </button>
+    <button class="tab" data-s="config" onclick="go('config')">
+      <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.4 3H9.6l-.4 2.4a7 7 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 2.4h4.8l.4-2.4a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6a7 7 0 0 0 .1-1z"/></svg>
+      Mi negocio
+    </button>
+  </nav>
+
+</div>
+<p class="caption">Boceto navegable · toca las fichas y las pestañas de abajo. Todo el contenido es de ejemplo.</p>
+</div>
+
+<script>
+  function go(name){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('s-'+name).classList.add('active');
+    const tabName = (name==='detalle') ? 'hoy' : name;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.dataset.s===tabName));
+    document.querySelector('.device').scrollTop=0;
+  }
+  // pills demo
+  document.querySelectorAll('.pill').forEach(p=>p.addEventListener('click',()=>p.classList.toggle('on')));
+
+  // ===== ONBOARDING =====
+  let onbStep = 0;
+  const ONB_TOTAL = 5;
+  function renderOnb(){
+    document.querySelectorAll('.onb-step').forEach(s=>s.classList.toggle('active', +s.dataset.step===onbStep));
+    document.querySelectorAll('#onbProg .seg').forEach((seg,i)=>{
+      seg.classList.toggle('done', i<onbStep);
+      seg.classList.toggle('now', i===onbStep);
+    });
+    const back = document.getElementById('onbBack');
+    const next = document.getElementById('onbNext');
+    back.style.visibility = onbStep===0 ? 'hidden':'visible';
+    if(onbStep===0) next.textContent='Empezar';
+    else if(onbStep===ONB_TOTAL) next.textContent='A ver qué encontraste';
+    else next.textContent='Continuar';
+    document.querySelector('.onb-body').scrollTop=0;
+    if(onbStep===ONB_TOTAL) fireConfetti();
+  }
+  function onbNext(){
+    if(onbStep>=ONB_TOTAL){
+      document.getElementById('onb').classList.add('hide');
+      setTimeout(showFirstAdv, 450);   // revela el primer consejo antes que nada
+      return;
+    }
+    onbStep++; renderOnb();
+  }
+  function onbPrev(){ if(onbStep>0){onbStep--; renderOnb();} }
+
+  // ===== PRIMER CONSEJO (reveal) =====
+  function showFirstAdv(){
+    const fa=document.getElementById('firstadv');
+    fa.classList.add('on');
+    document.getElementById('faThink').style.display='flex';
+    document.getElementById('faReveal').classList.remove('show');
+    // tras "pensar" un momento, revela el consejo
+    setTimeout(()=>{
+      document.getElementById('faThink').style.display='none';
+      document.getElementById('faReveal').classList.add('show');
+    }, 2200);
+  }
+  function closeFirstAdv(){
+    document.getElementById('firstadv').classList.add('hide');
+    setTimeout(introPregunta, 450);   // luego sigue la pregunta del día
+  }
+  function selPos(el){
+    document.querySelectorAll('.pos-opt').forEach(o=>o.classList.remove('sel'));
+    el.classList.add('sel');
+  }
+
+  // confeti del cierre
+  function fireConfetti(){
+    const wrap=document.getElementById('confetti');
+    const cols=['#9A5B34','#5E6B3E','#A8792C','#9E4433','#7A4526'];
+    wrap.innerHTML='';
+    for(let i=0;i<26;i++){
+      const c=document.createElement('i');
+      c.style.left=(Math.random()*100)+'%';
+      c.style.background=cols[i%cols.length];
+      c.style.animationDelay=(Math.random()*.4)+'s';
+      c.style.transform='rotate('+(Math.random()*180)+'deg)';
+      wrap.appendChild(c);
+    }
+    void wrap.offsetWidth;
+    wrap.classList.add('go');
+    setTimeout(()=>wrap.classList.remove('go'),2000);
+  }
+  renderOnb();
+
+  // ===== TOUR DE FUNCIONES (navega + resalta) =====
+  const tourSteps=[
+    {tab:'hoy', screen:'hoy', spot:'spot-hoy',
+     h:'Aquí están tus consejos', p:'Cada mañana reviso tus ventas y te dejo lo importante. Toca cualquier consejo para ver por qué te lo doy.'},
+    {tab:'preguntar', screen:'preguntar', spot:'spot-preguntar',
+     h:'Pregúntame lo que sea', p:'¿Cómo va tal modelo? ¿Qué me conviene surtir? Escríbeme o dime con tu voz, y te contesto derecho.'},
+    {tab:'config', screen:'config', spot:'spot-config',
+     h:'Cuéntame lo que solo tú sabes', p:'Aquí me platicas de tu negocio y me subes archivos. Entre más sepa, menos consejos tontos te doy.'}
+  ];
+  let tourIdx=0;
+  function startTour(){
+    tourIdx=0;
+    const t=document.getElementById('tour');
+    t.classList.add('on');
+    document.body.classList.add('touring');
+    const dots=document.getElementById('tourDots');
+    dots.innerHTML=tourSteps.map(()=>'<span class="tdot"></span>').join('');
+    requestAnimationFrame(()=>{t.classList.add('show'); renderTour();});
+  }
+  function renderTour(){
+    const s=tourSteps[tourIdx];
+    // 1) cambiar a la pantalla de la que habla este paso
+    go(s.screen);
+    // 2) textos
+    document.getElementById('tourNum').textContent=(tourIdx+1)+' de '+tourSteps.length;
+    document.getElementById('tourH').textContent=s.h;
+    document.getElementById('tourP').textContent=s.p;
+    document.getElementById('tourNext').textContent = tourIdx===tourSteps.length-1 ? 'Entendido' : 'Siguiente';
+    document.querySelectorAll('#tourDots .tdot').forEach((d,i)=>d.classList.toggle('on',i===tourIdx));
+    // 3) esperar a que la pantalla pinte, hacer scroll al elemento y colocar halo + tarjeta
+    setTimeout(()=>{
+      const el=document.getElementById(s.spot);
+      if(el) el.scrollIntoView({block:'center', behavior:'smooth'});
+      setTimeout(()=>placeTourHighlight(s), 320);
+    }, 60);
+  }
+  function placeTourHighlight(s){
+    const dev=document.querySelector('.device').getBoundingClientRect();
+    const spot=document.getElementById('tourSpot');
+    const tabSpot=document.getElementById('tourTabSpot');
+    const card=document.getElementById('tourCard');
+    // limpiar highlight previo y aplicarlo al elemento actual (lo eleva sobre el velo)
+    document.querySelectorAll('.tour-highlight').forEach(x=>x.classList.remove('tour-highlight'));
+    // halo sobre el elemento interno, recortado a lo que de verdad se ve dentro del dispositivo
+    const el=document.getElementById(s.spot);
+    if(el){
+      el.classList.add('tour-highlight');
+      const r=el.getBoundingClientRect();
+      // límites visibles del área de contenido (debajo de la barra superior, encima de los tabs)
+      const navH=72, topH=8;
+      const visTop = topH;
+      const visBottom = dev.height - navH;
+      let top = r.top-dev.top-5;
+      let bottom = r.bottom-dev.top+5;
+      top = Math.max(top, visTop);
+      bottom = Math.min(bottom, visBottom);
+      const h = Math.max(bottom-top, 40);
+      spot.style.left=(r.left-dev.left-5)+'px';
+      spot.style.top=top+'px';
+      spot.style.width=(r.width+10)+'px';
+      spot.style.height=h+'px';
+      spot.style.display='block';
+    }
+    // halo sobre la pestaña
+    const tab=document.querySelector('.tab[data-s="'+s.tab+'"]');
+    const tr=tab.getBoundingClientRect();
+    tabSpot.style.left=(tr.left-dev.left-3)+'px';
+    tabSpot.style.top=(tr.top-dev.top-3)+'px';
+    tabSpot.style.width=(tr.width+6)+'px';
+    tabSpot.style.height=(tr.height+6)+'px';
+    // tarjeta: si el elemento está en la mitad de arriba, la tarjeta va abajo (sobre los tabs); si no, arriba
+    const elRect=el?el.getBoundingClientRect():tr;
+    const elCenterY=elRect.top-dev.top+elRect.height/2;
+    if(elCenterY < dev.height*0.5){
+      // elemento arriba -> tarjeta abajo, justo sobre la barra de tabs
+      card.style.bottom=(dev.bottom-tr.top+14)+'px';
+      card.style.top='auto';
+    } else {
+      // elemento abajo -> tarjeta arriba
+      card.style.top='26px';
+      card.style.bottom='auto';
+    }
+  }
+  function tourNext(){
+    if(tourIdx>=tourSteps.length-1){ endTour(); return; }
+    tourIdx++; renderTour();
+  }
+  function endTour(){
+    const t=document.getElementById('tour');
+    t.classList.remove('show');
+    document.body.classList.remove('touring');
+    document.querySelectorAll('.tour-highlight').forEach(x=>x.classList.remove('tour-highlight'));
+    setTimeout(()=>{t.classList.remove('on'); go('hoy');},350);
+  }
+
+  // pregunta de bienvenida (pantalla completa)
+  function wResponder(btn){
+    closeQtip();
+    const resp = btn.textContent;
+    const body = document.getElementById('wBody');
+    const bottom = document.getElementById('wBottom');
+    bottom.style.display='none';
+    body.className='w-done';
+    body.innerHTML='<div class="big">✓</div><h2>Anotado: '+resp+'</h2>'
+      +'<p>Lo tomo en cuenta desde hoy. Verás cómo aparece en mis próximos consejos.</p>';
+    setTimeout(entrar, 1700);
+  }
+  // secuencia: onboarding -> explica la pregunta del día -> app -> tour de pestañas
+  function introPregunta(){
+    // la pantalla welcome ya está visible debajo; mostramos el coach mark encima
+    setTimeout(()=>document.getElementById('qtip').classList.add('show'), 350);
+  }
+  function closeQtip(){
+    document.getElementById('qtip').classList.remove('show');
+  }
+  function entrar(){
+    closeQtip();
+    document.getElementById('welcome').classList.add('hide');
+    setTimeout(startTour, 550);   // ahora sí, ya con los tabs visibles
+  }
+
+  // configuración: chips de ejemplo insertan una guía en el textarea
+  function addEx(chip){
+    const ta = document.querySelector('.textarea');
+    const guias = {
+      'Quién es mi cliente':'Mis clientes son ',
+      'Mi competencia':'Cerca de mí hay ',
+      'Cómo manejo precios':'Con los precios yo ',
+      'Mis mejores proveedores':'Mi mejor proveedor es '
+    };
+    const g = guias[chip.textContent] || '';
+    ta.value += (ta.value && !ta.value.endsWith('\n') ? '\n' : '') + g;
+    ta.focus();
+  }
+
+  // configuración: simular adjuntar un archivo
+  function addFile(){
+    const list = document.getElementById('fileList');
+    const el = document.createElement('div');
+    el.className='file';
+    el.innerHTML='<div class="fi img">IMG</div>'
+      +'<div class="fmeta"><div class="fn">Inventario en libreta.jpg</div>'
+      +'<div class="fd">Leyendo el archivo…</div></div>'
+      +'<span class="fx">×</span>';
+    list.appendChild(el);
+    el.querySelector('.fx').onclick=()=>el.remove();
+    setTimeout(()=>{
+      el.querySelector('.fd').textContent='Subido ahora';
+      const tag=document.createElement('span');tag.className='ftag';tag.textContent='Leído ✓';
+      el.replaceChild(tag, el.querySelector('.fx'));
+    }, 1600);
+  }
+</script>
+</body>
+</html>
