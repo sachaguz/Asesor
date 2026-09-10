@@ -63,7 +63,7 @@ export default function VerifyEmailScreen() {
             </View>
             <Text style={styles.titulo}>El enlace no es válido</Text>
             <Text style={styles.texto}>
-              Puede que ya haya vencido. Podés pedir uno nuevo desde "Mi negocio" en la app.
+              Puede que ya haya vencido. Podés pedir uno nuevo desde “Mi negocio” en la app.
             </Text>
           </>
         )}

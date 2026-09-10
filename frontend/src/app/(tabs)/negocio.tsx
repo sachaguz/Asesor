@@ -151,7 +151,7 @@ export default function NegocioScreen() {
           <Text style={styles.blockHint}>
             Subí tu historial de ventas tal cual lo tenés — no importa el orden ni los nombres de
             las columnas, los reconozco solo. Si lo que tenés es un inventario, lista de precios u
-            otro archivo, usá "Adjuntar" más abajo en vez de esto.
+            otro archivo, usá “Adjuntar” más abajo en vez de esto.
           </Text>
           {importar.archivo ? (
             <>

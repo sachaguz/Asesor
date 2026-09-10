@@ -57,7 +57,7 @@ export default function ResetPasswordScreen() {
 
         {!token ? (
           <Text style={styles.subtitle}>
-            Este enlace no es válido. Volvé a pedir uno desde "Olvidaste tu contraseña" en la app.
+            Este enlace no es válido. Volvé a pedir uno desde “Olvidaste tu contraseña” en la app.
           </Text>
         ) : (
           <>

@@ -1,0 +1,52 @@
+name: Backend tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-tests.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-tests.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: asesor
+          POSTGRES_PASSWORD: asesor
+          POSTGRES_DB: asesor
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U asesor"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Create test database
+        run: PGPASSWORD=asesor psql -h localhost -U asesor -d postgres -c "CREATE DATABASE asesor_test;"
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql+psycopg://asesor:asesor@localhost:5432/asesor
+        run: pytest -q

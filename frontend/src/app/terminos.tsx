@@ -17,7 +17,7 @@ export default function TerminosScreen() {
         creés que alguien más accedió a ella, contactanos apenas puedas desde la sección Soporte.
       </DocumentSection>
       <DocumentSection titulo="3. La suscripción de Redes">
-        La función "Redes" (métricas de Instagram, racha diaria e ideas de contenido) es una
+        La función “Redes” (métricas de Instagram, racha diaria e ideas de contenido) es una
         suscripción paga, con cobro recurrente mensual procesado por Stripe. Podés cancelarla
         cuando quieras; seguís teniendo acceso hasta el final del período ya pagado. No se hacen
         devoluciones de períodos ya cobrados, salvo que la ley aplicable diga lo contrario.

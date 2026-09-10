@@ -21,7 +21,7 @@ export default function SoporteScreen() {
         del período ya pagado.
       </DocumentSection>
       <DocumentSection titulo="¿Cómo conecto mi Instagram?">
-        Desde la pestaña Redes, botón "Conectar Instagram". Necesitás una cuenta de Instagram
+        Desde la pestaña Redes, botón “Conectar Instagram”. Necesitás una cuenta de Instagram
         profesional (business o creador), no una personal.
       </DocumentSection>
       <DocumentSection titulo="¿Qué pasa con mis datos si borro mi cuenta?">

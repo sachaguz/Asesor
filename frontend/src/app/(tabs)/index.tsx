@@ -284,7 +284,7 @@ export default function HoyScreen() {
               <Mascot pose="neutral" size={72} />
               <Text style={styles.emptyTitle}>Todavía no tengo nada que decirte</Text>
               <Text style={styles.emptyText}>
-                Cuanto más sepa de tu negocio — tus ventas, y lo que me cuentes en "Mi negocio" —
+                Cuanto más sepa de tu negocio — tus ventas, y lo que me cuentes en “Mi negocio” —
                 mejores consejos te puedo dar. No solo de qué surtir: precios, temporadas,
                 clientes, lo que haga falta. Arranquemos con tus ventas.
               </Text>
