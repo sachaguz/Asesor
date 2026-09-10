@@ -17,13 +17,14 @@ sobre las ventas, apoyado en señales y umbrales genéricos como grounding, y de
 
 ## Capturas
 
-| Consejos del día | Chat con "Dato" | Mi negocio |
-|---|---|---|
-| ![Consejos del día](docs/screenshots/hoy.jpg) | ![Chat](docs/screenshots/preguntar.jpg) | ![Mi negocio](docs/screenshots/mi-negocio.jpg) |
-
-| Redes sociales | Login |
-|---|---|
-| ![Redes](docs/screenshots/redes.jpg) | ![Login](docs/screenshots/login.jpg) |
+<p align="center">
+  <img src="docs/screenshots/login.jpg" width="180" alt="Login" />
+  <img src="docs/screenshots/hoy.jpg" width="180" alt="Consejos del día" />
+  <img src="docs/screenshots/preguntar.jpg" width="180" alt="Chat con Dato" />
+  <img src="docs/screenshots/redes.jpg" width="180" alt="Redes sociales" />
+  <img src="docs/screenshots/mi-negocio.jpg" width="180" alt="Mi negocio" />
+</p>
+<p align="center"><sub>Login · Consejos del día · Chat con "Dato" · Redes sociales · Mi negocio</sub></p>
 
 *Capturas tomadas contra el backend real (`expo start --web`), con datos de una taquería de prueba.*
 
